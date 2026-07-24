@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cairn-marine-mammals-communication"
+version = "0.1.0"
+description = "Curated release repo for marine mammal audio dataset and checkpoint workflows."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.5.0",
+    "torchaudio>=2.5.0",
+    "librosa>=0.10.0",
+    "soundfile>=0.12.0",
+    "matplotlib>=3.8.0",
+    "numpy>=1.26.0",
+    "scipy>=1.12.0",
+    "pyyaml>=6.0",
+    "tqdm>=4.66.0",
+    "datasets>=2.16.0",
+    "pandas>=2.1.0",
+]
+
+[project.optional-dependencies]
+audio-codec = [
+    "dac>=0.4.0",
+    "lac @ git+https://github.com/hugofloresgarcia/lac.git",
+    "descript-audiotools @ git+https://github.com/hugofloresgarcia/audiotools.git",
+]
+dataset = [
+    "google-cloud-storage>=2.16.0",
+    "pyloudnorm>=0.1.1",
+    "tensorflow-cpu>=2.21.0",
+    "tensorflow-hub>=0.16.1",
+]
+dev = [
+    "ipykernel>=6.0",
+    "ipywidgets>=8.0",
+    "jupyter>=1.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]

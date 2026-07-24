@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" role="img" aria-labelledby="title desc">
+  <title id="title">SanctSound humpback processing and training-selection flow</title>
+  <desc id="desc">Seven processing stages turn raw SanctSound FLAC recordings into a full DAC9 token corpus. A separate detector-score threshold selects the 796-million-token training subset from that corpus.</desc>
+  <style>
+    text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #15283b; }
+    .title { font-size: 34px; font-weight: 750; }
+    .subtitle { font-size: 19px; fill: #486174; }
+    .group { font-size: 17px; font-weight: 750; letter-spacing: 1.1px; fill: #486174; }
+    .stage { font-size: 18px; font-weight: 750; }
+    .detail { font-size: 15px; fill: #486174; }
+    .output { font-size: 20px; font-weight: 750; }
+  </style>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6b8496"/></marker>
+  </defs>
+  <rect width="1200" height="850" fill="#fbfdff"/>
+  <rect x="22" y="22" width="1156" height="806" rx="18" fill="#fff" stroke="#d7e3ec" stroke-width="2"/>
+  <text x="62" y="76" class="title">From hydrophone recordings to training tokens</text>
+  <text x="62" y="106" class="subtitle">Seven processing stages create the release corpus; detector scoring selects the training subset.</text>
+
+  <rect x="62" y="146" width="1076" height="90" rx="13" fill="#edf5fa" stroke="#b8cfdf" stroke-width="2"/>
+  <text x="88" y="181" class="group">INPUT</text>
+  <text x="88" y="211" class="output">Raw SanctSound FLAC recordings</text>
+  <text x="490" y="211" class="detail">44.1 kHz · 286 source files · 322.6 hours</text>
+
+  <text x="62" y="282" class="group">PREPARE THE WAVEFORM</text>
+  <g transform="translate(62 305)">
+    <rect width="330" height="92" rx="12" fill="#eff8f5" stroke="#62ad95" stroke-width="2"/>
+    <circle cx="34" cy="37" r="18" fill="#62ad95"/><text x="27" y="44" fill="#fff" font-size="18" font-weight="750">1</text>
+    <text x="64" y="32" class="stage">Skip calibration tone</text><text x="64" y="57" class="detail">Remove the recorder test signal</text>
+    <rect x="370" width="330" height="92" rx="12" fill="#eff8f5" stroke="#62ad95" stroke-width="2"/>
+    <circle cx="404" cy="37" r="18" fill="#62ad95"/><text x="397" y="44" fill="#fff" font-size="18" font-weight="750">2</text>
+    <text x="434" y="32" class="stage">Bandpass filter</text><text x="434" y="57" class="detail">80 Hz–4 kHz humpback call band</text>
+    <rect x="740" width="336" height="92" rx="12" fill="#eff8f5" stroke="#62ad95" stroke-width="2"/>
+    <circle cx="774" cy="37" r="18" fill="#62ad95"/><text x="767" y="44" fill="#fff" font-size="18" font-weight="750">3</text>
+    <text x="804" y="32" class="stage">Segment</text><text x="804" y="57" class="detail">Split continuous audio into 30 s chunks</text>
+    <path d="M330 46 H360 M700 46 H730" stroke="#6b8496" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+
+  <text x="62" y="446" class="group">STANDARDIZE EACH CHUNK</text>
+  <g transform="translate(62 469)">
+    <rect width="516" height="92" rx="12" fill="#f5f2fc" stroke="#927bc8" stroke-width="2"/>
+    <circle cx="34" cy="37" r="18" fill="#927bc8"/><text x="27" y="44" fill="#fff" font-size="18" font-weight="750">4</text>
+    <text x="64" y="32" class="stage">Peak normalization</text><text x="64" y="57" class="detail">Scale each chunk to 0.95 amplitude</text>
+    <rect x="560" width="516" height="92" rx="12" fill="#f5f2fc" stroke="#927bc8" stroke-width="2"/>
+    <circle cx="594" cy="37" r="18" fill="#927bc8"/><text x="587" y="44" fill="#fff" font-size="18" font-weight="750">5</text>
+    <text x="624" y="32" class="stage">Loudness normalization</text><text x="624" y="57" class="detail">Make listening level consistent across chunks</text>
+    <path d="M516 46 H550" stroke="#6b8496" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+
+  <text x="62" y="610" class="group">TRIAGE AND ENCODE</text>
+  <g transform="translate(62 633)">
+    <rect width="516" height="92" rx="12" fill="#fff7e9" stroke="#d5a653" stroke-width="2"/>
+    <circle cx="34" cy="37" r="18" fill="#d5a653"/><text x="27" y="44" fill="#fff" font-size="18" font-weight="750">6</text>
+    <text x="64" y="32" class="stage">Heuristic quality filter</text><text x="64" y="57" class="detail">whale_cv · energy_ratio · minimum whale RMS</text>
+    <rect x="560" width="516" height="92" rx="12" fill="#fff0e9" stroke="#d8795a" stroke-width="2"/>
+    <circle cx="594" cy="37" r="18" fill="#d8795a"/><text x="587" y="44" fill="#fff" font-size="18" font-weight="750">7</text>
+    <text x="624" y="32" class="stage">DAC 9-codebook tokenization</text><text x="624" y="57" class="detail">Encode each retained chunk as an interleaved token sequence</text>
+    <path d="M516 46 H550" stroke="#6b8496" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+
+  <path d="M600 725 V752" stroke="#6b8496" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="62" y="770" width="530" height="42" rx="10" fill="#eaf1fb" stroke="#376fa7" stroke-width="2"/>
+  <text x="86" y="797" class="output">Release corpus: ~10.4B tokens · ~488K .npy files</text>
+  <path d="M592 791 H635" stroke="#376fa7" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+  <rect x="648" y="755" width="490" height="57" rx="10" fill="#e8f6f1" stroke="#58b89a" stroke-width="2"/>
+  <text x="673" y="782" class="output">Training selection: detector score ≥ 0.7</text>
+  <text x="673" y="804" class="detail">796M-token high-confidence training subset</text>
+</svg>

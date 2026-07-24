@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Public release of three trained neural audio models for humpback whale communication: 10K, 32K, and 128K DAC 9-codebook checkpoints for inference, fine-tuning, and selected training resumes.">
+    <meta name="keywords" content="deep learning, transformer, audio, neural networks, machine learning, whale communication">
+    <meta name="author" content="CAIRN Institute">
+    <title>Public Release of Trained Neural Audio Models on Whale Communication</title>
+    <style>
+        :root {
+            --primary: #1a3a52;
+            --secondary: #2b5a8c;
+            --accent: #4a90e2;
+            --light-bg: #f5f7fa;
+            --border: #d0d8e0;
+            --text: #2c3e50;
+            --code-bg: #2b3e50;
+            --cairn-blue: #2b5a8c;
+            --cairn-gray: #5a6c7d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background-color: #fff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+        }
+
+        header::before {
+            content: "CAIRN INSTITUTE";
+            display: block;
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            color: var(--cairn-blue);
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #7f8c8d;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag {
+            background-color: var(--light-bg);
+            color: var(--secondary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            color: var(--cairn-blue);
+            border-left: 3px solid var(--accent);
+            padding-left: 15px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+
+        .callout {
+            padding: 15px 20px;
+            border-left: 4px solid;
+            border-radius: 4px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+        }
+
+        .callout.insight {
+            border-left-color: var(--secondary);
+            background-color: #eef4fa;
+        }
+
+        .callout.focus {
+            border-left-color: var(--accent);
+            background-color: #f0f6ff;
+        }
+
+        .callout.warning {
+            border-left-color: #d9534f;
+            background-color: #fdf8f8;
+        }
+
+        .callout.stats {
+            border-left-color: var(--secondary);
+            background-color: #f5f9fc;
+        }
+
+        .blog-figure {
+            margin: 28px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: white;
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            color: #5a6c7d;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+
+        blockquote {
+            border-left: 4px solid var(--secondary);
+            padding-left: 20px;
+            margin-left: 0;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        footer {
+            border-top: 2px solid var(--border);
+            margin-top: 50px;
+            padding-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom 0.2s;
+        }
+
+        a:hover {
+            border-bottom-color: var(--secondary);
+        }
+
+        .reading-time {
+            color: #95a5a6;
+            font-size: 0.95em;
+        }
+
+        .metric-box {
+            background-color: var(--light-bg);
+            padding: 12px;
+            border-left: 3px solid var(--secondary);
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            .container { padding: 20px 15px; }
+            table { font-size: 0.9em; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Public Release of Trained Neural Audio Models on Whale Communication</h1>
+            <div class="meta">
+                <div class="meta-item">
+                    <strong>Author:</strong> CAIRN Institute
+                </div>
+                <div class="meta-item">
+                    <strong>Published:</strong> August 4, 2026
+                </div>
+                <div class="meta-item reading-time">
+                    <strong>Read time:</strong> 10–12 minutes
+                </div>
+            </div>
+            <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <span class="tag">#DeepLearning</span>
+                <span class="tag">#Audio</span>
+                <span class="tag">#LLM</span>
+                <span class="tag">#TransformerArchitecture</span>
+                <span class="tag">#MarineBiology</span>
+            </div>
+        </header>
+
+        <main>
+            <section>
+                <h2>Quick Summary</h2>
+                <p>We trained a series of neural language models on whale vocalizations, scaling from 8k to <strong>128k token context windows</strong> (covering up to 2.8 minutes of audio). Across 7 major training runs, we processed <strong>103.4 billion tokens</strong> and achieved a best perplexity of <strong>203.2</strong>—a 97.8% reduction from the random baseline. The models learned to generate novel whale-like audio sequences, capturing temporal and spectral patterns from real underwater recordings. To make long contexts practical on modest GPU memory, the models combine local sliding-window attention with periodic global context—using compressed sparse K/V attention in the 128k variant—and mixture-of-experts routing.</p>
+            </section>
+
+            <section>
+                <h2>Public Model Release: Three Humpback Audio Models</h2>
+                <p>We are releasing three DAC 9-codebook humpback-audio checkpoints: the <strong>9CB 10k Large v2</strong>, <strong>9CB 32k Medium</strong>, and <strong>9CB 128k NSA</strong> models. Each release includes a <code>best_model.pt</code> checkpoint and its training configuration.</p>
+                <table>
+                    <tr>
+                        <th>Released model</th>
+                        <th>Context</th>
+                        <th>Use it for</th>
+                        <th>Exact resume</th>
+                    </tr>
+                    <tr>
+                        <td>9CB 10k Large v2</td>
+                        <td>10,240 tokens</td>
+                        <td>Autoregressive audio continuation, fine-tuning</td>
+                        <td>✓ step 648,000 checkpoint</td>
+                    </tr>
+                    <tr>
+                        <td>9CB 32k Medium</td>
+                        <td>32,768 tokens</td>
+                        <td>Longer-context continuation, fine-tuning</td>
+                        <td>✓ steps 504,000 and 506,000 checkpoints</td>
+                    </tr>
+                    <tr>
+                        <td>9CB 128k NSA</td>
+                        <td>131,072 tokens</td>
+                        <td>Long-context experimentation, fine-tuning</td>
+                        <td>— best-model checkpoint only</td>
+                    </tr>
+                </table>
+                <div class="callout insight">
+                    <strong>How to use the checkpoints:</strong> use <code>best_model.pt</code> for inference or checkpoint-initialized fine-tuning. Use a <code>checkpoint_step*.pt</code> file only when you need to continue the original training run with its saved optimizer and scheduler state. The 128k release supports inference and fine-tuning, but not an exact training resume.
+                </div>
+            </section>
+
+            <section>
+                <h2>The Goal: Teaching Transformers to Speak Whale</h2>
+                <p>Imagine training a language model on English text—you feed it millions of words, and it learns to predict the next word. Now imagine doing the same with whale audio, except instead of words, you have 9,219-token vocabulary of audio codes.</p>
+                <p>The challenge: whale vocalizations are structured, temporal phenomena. Unlike text (which is discrete by nature), audio is continuous. You need:</p>
+                <ul>
+                    <li>A neural audio codec to convert waveforms → discrete tokens</li>
+                    <li>A transformer architecture that can handle long sequences</li>
+                    <li>Enough GPU memory to train on reasonable context lengths</li>
+                </ul>
+                <p>Over 4 months, we solved all three. Here's how.</p>
+            </section>
+
+            <section>
+                <h2>Model Architectures</h2>
+                <p>We explored two main attention mechanisms, each designed to solve a specific memory constraint:</p>
+
+                <h3>Architecture 1: SWA + MoE (Sliding Window Attention + Mixture of Experts)</h3>
+                <p><strong>Key idea:</strong> Don't attend to every token in the history. Instead, attend to:</p>
+                <ul>
+                    <li>A <strong>local window</strong> of recent tokens (1024–2048 tokens, ~1–3 seconds of audio)</li>
+                    <li><strong>Full attention</strong> every Nth layer (typically every 5th layer), providing long-range connectivity</li>
+                </ul>
+
+                <h3>Architecture 2: NSA + MoE (Native Sparse Attention + Mixture of Experts)</h3>
+                <p><strong>Inspired by:</strong> DeepSeek V4's sparse architecture</p>
+                <p><strong>Key improvements:</strong></p>
+                <ul>
+                    <li>Local window of 2048 tokens (~2.6 seconds)</li>
+                    <li>Global sparse attention with ~1,820 anchor positions</li>
+                    <li>Muon optimizer for stable long-context training</li>
+                </ul>
+
+                <figure class="blog-figure">
+                    <img src="assets/training_swa_architecture.svg" alt="Diagram of the 16-layer SWA architecture used in the large 9cb_10k model. Layers 5, 10, and 15 use full causal attention; the remaining layers use a causal 1,024-token local window. Every layer uses top-2 routing across eight experts.">
+                    <figcaption>SWA architecture used in the large 9cb_10k model. Layers 5, 10, and 15 refresh global context through a full causal-attention pass; the remaining layers use a 1,024-token causal local window.</figcaption>
+                </figure>
+
+                <figure class="blog-figure">
+                    <img src="assets/training_nsa_architecture.svg" alt="Diagram of the 12-layer NSA architecture used in the 128k model. Layers 5 and 10 use causal attention over stride-72 compressed key and value anchors, while the other layers use 2,048-token local windows. Every layer uses top-1 routing across 16 experts.">
+                    <figcaption>NSA architecture used in the 128k long-context model. Layers 5 and 10 attend causally over K/V anchors sampled every 72 tokens across the full sequence (about 1,820 anchors); the other layers use a 2,048-token local window.</figcaption>
+                </figure>
+
+                <div class="callout insight">
+                    <strong>Why Sparse Attention Matters:</strong> At 128k tokens, dense attention would require ~17 billion comparisons per forward pass. Sparse attention with 1,820 anchors reduces this to ~230 million comparisons—74× reduction while maintaining long-range connectivity.
+                </div>
+            </section>
+
+            <section>
+                <h2>Model Size Configurations</h2>
+                <table>
+                    <tr>
+                        <th>Preset</th>
+                        <th>Params</th>
+                        <th>Context</th>
+                        <th>Experts</th>
+                    </tr>
+                    <tr>
+                        <td>Medium SWA+MoE</td>
+                        <td>205M</td>
+                        <td>8k</td>
+                        <td>8 (top-2)</td>
+                    </tr>
+                    <tr>
+                        <td>Medium SWA+MoE (32k)</td>
+                        <td>205M</td>
+                        <td>32k</td>
+                        <td>16 (top-2)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Large SWA+MoE ⭐</strong></td>
+                        <td><strong>479M</strong></td>
+                        <td><strong>10k</strong></td>
+                        <td><strong>8 (top-2)</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Medium NSA+MoE (historical experiments)</td>
+                        <td>375M</td>
+                        <td>64k–128k</td>
+                        <td>16 (top-2 at 64k; top-1 at 128k)</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>Training Runs: The Journey</h2>
+                <p>Across 7 major training runs, we processed <strong>103.4 billion tokens</strong>:</p>
+
+                <table>
+                    <tr>
+                        <th>Run</th>
+                        <th>Context</th>
+                        <th>Steps</th>
+                        <th>Best Perplexity</th>
+                    </tr>
+                    <tr>
+                        <td>Coarse 8k v2</td>
+                        <td>8k</td>
+                        <td>18.5k</td>
+                        <td>32.0</td>
+                    </tr>
+                    <tr>
+                        <td>9CB 8k v1</td>
+                        <td>8k</td>
+                        <td>88.5k</td>
+                        <td>252.9</td>
+                    </tr>
+                    <tr>
+                        <td>9CB 10k Large v2 ⭐</td>
+                        <td>10k</td>
+                        <td>656k</td>
+                        <td><strong>203.2</strong></td>
+                    </tr>
+                    <tr>
+                        <td>9CB 32k Medium</td>
+                        <td>32k</td>
+                        <td>506k</td>
+                        <td>208.5</td>
+                    </tr>
+                    <tr>
+                        <td>9CB 128k NSA</td>
+                        <td>128k</td>
+                        <td>110k</td>
+                        <td>634.6</td>
+                    </tr>
+                </table>
+
+            </section>
+
+            <section>
+                <h2><span class="emoji">🔍</span>The Best Model: 9CB 10k Large v2 ⭐</h2>
+                <p><strong>Setup:</strong> 479M parameters, 10,240 token context (~13 seconds)</p>
+                <p><strong>Training:</strong> 656,000 steps over ~132 hours</p>
+                <p><strong>Results:</strong></p>
+                <div class="metric-box">
+                    <strong>Best validation loss:</strong> 5.314<br>
+                    <strong>Best perplexity:</strong> 203.2 (97.8% reduction from random)<br>
+                    <strong>Total tokens trained:</strong> 53.7B
+                </div>
+
+                <div class="callout focus">
+                    <strong><span class="emoji">🎯</span>Key insight:</strong> This is our gold standard. 203.2 perplexity means the model has reduced its uncertainty to <strong>2.2% of the random baseline</strong>. The model has genuinely learned whale vocalization patterns.
+                </div>
+            </section>
+
+            <section>
+                <h2>128k Context: The Frontier</h2>
+                <p><strong>Motivation:</strong> 2.8 minutes (~169 seconds) of context—enough for extended whale song sequences</p>
+                <p><strong>Training Progress:</strong></p>
+
+                <table>
+                    <tr>
+                        <th>Steps</th>
+                        <th>Val Loss</th>
+                        <th>Notes</th>
+                    </tr>
+                    <tr>
+                        <td>10k</td>
+                        <td>6.5404</td>
+                        <td>Initial</td>
+                    </tr>
+                    <tr>
+                        <td>50k</td>
+                        <td>6.4756</td>
+                        <td>Steady improvement</td>
+                    </tr>
+                    <tr>
+                        <td>110k</td>
+                        <td>6.4572</td>
+                        <td>Plateauing—LR reduction needed</td>
+                    </tr>
+                </table>
+
+                <p><strong>Key observations:</strong></p>
+                <ul>
+                    <li><strong>110 consecutive eval checkpoints showed improvement</strong> (no regressions)</li>
+                    <li>Loss was clearly plateauing due to learning rate (1e-4 too high)</li>
+                    <li>CUDA OOM crash at step ~110k due to memory exhaustion</li>
+                </ul>
+
+                <div class="callout warning">
+                    <strong>Challenge:</strong> 128k context is memory-intensive. Even with NSA, top-1 routing, and split projections, extended training exhausts 16GB GPU memory. Solution: Use a larger GPU or implement per-step gradient accumulation.
+                </div>
+            </section>
+
+            <section>
+                <h2>Key Findings</h2>
+
+                <h3>1. Context Length vs. Loss Trade-off</h3>
+                <p>Longer context windows produce higher loss values because the prediction task is harder:</p>
+                <table>
+                    <tr>
+                        <th>Context</th>
+                        <th>Val Loss @ 51k steps</th>
+                        <th>Perplexity</th>
+                    </tr>
+                    <tr>
+                        <td>8k</td>
+                        <td>5.590</td>
+                        <td>267.6</td>
+                    </tr>
+                    <tr>
+                        <td>32k</td>
+                        <td>5.637</td>
+                        <td>280.5</td>
+                    </tr>
+                    <tr>
+                        <td>128k</td>
+                        <td>6.475</td>
+                        <td>648.5</td>
+                    </tr>
+                </table>
+
+                <h3>2. Model Size Matters</h3>
+                <p>The 479M Large model achieved lower perplexity (203.2) than the 375M Medium model (208.5), despite the medium model seeing more data. This suggests the task is <strong>capacity-limited</strong> at current dataset sizes.</p>
+
+                <h3>3. MoE Scales Efficiently</h3>
+                <p>MoE + sparse routing is perfect for audio:</p>
+                <ul>
+                    <li>Huge model capacity (8–16 experts)</li>
+                    <li>Efficient inference (only 1–2 experts activate per token)</li>
+                    <li>Training feasibility (gradients flow through fewer parameters)</li>
+                </ul>
+
+                <h3>4. Generation Works</h3>
+                <p>All models successfully generated novel whale-like audio when sampled autoregressively. Generated samples exhibit whale-like spectro-temporal patterns with realistic temporal dynamics.</p>
+
+                <figure class="blog-figure">
+                    <img src="assets/training_generated_vs_original_spectrograms.png" alt="Spectrogram view of the sample_5 first-4-second prompt and the full prompt-plus-generation output from the large 9cb_10k checkpoint, with the generation boundary marked.">
+                    <figcaption>Spectrogram view of the sample_5 first-4-second prompt and the full prompt-plus-generation output from the large 9cb_10k checkpoint, using the original NanoClaw-style prompting recipe. The panels use the same dB scale and a 0–4 kHz whale-band view; the dashed line marks where autoregressive generation begins, and the PSD overlay compares the 4-second prompt band distribution against the generated continuation alone.</figcaption>
+                </figure>
+
+                <div class="callout" style="margin-top: 1rem;">
+                    <strong>Listen to the full prompt + generation example:</strong>
+                    <p style="margin: 0.75rem 0 0.5rem 0;"><strong>Combined prompt and generated continuation</strong></p>
+                    <audio controls preload="none" style="width: 100%;">
+                        <source src="assets/training_audio/sample5_generation_10k_original/full_sample5_10k_original.wav" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </section>
+
+            <section>
+                <h2>Memory Optimization on 16GB GPU</h2>
+                <p>All training was conducted on a single NVIDIA RTX 5070 Ti. Key memory-saving techniques:</p>
+
+                <table>
+                    <tr>
+                        <th>Technique</th>
+                        <th>Memory Saving</th>
+                        <th>Trade-off</th>
+                    </tr>
+                    <tr>
+                        <td>Gradient checkpointing</td>
+                        <td>~30%</td>
+                        <td>Slower (recompute activations)</td>
+                    </tr>
+                    <tr>
+                        <td>8-bit Adam</td>
+                        <td>~50%</td>
+                        <td>Slightly less precise</td>
+                    </tr>
+                    <tr>
+                        <td>Batch size 1 + grad accum 8</td>
+                        <td>~50%</td>
+                        <td>Effective batch size 8</td>
+                    </tr>
+                    <tr>
+                        <td>Top-1 routing (128k)</td>
+                        <td>~45%</td>
+                        <td>One expert per token</td>
+                    </tr>
+                    <tr>
+                        <td>Compressed attention (NSA)</td>
+                        <td>~95%</td>
+                        <td>1,820 anchors vs. 128k²</td>
+                    </tr>
+                </table>
+
+                <figure class="blog-figure">
+                    <img src="assets/training_memory_timeline.png" alt="Approximate memory pressure versus context size on a 16 GB GPU, based on the documented training configurations.">
+                    <figcaption>Approximate memory pressure versus context size on a 16 GB GPU, based on the documented training configurations.</figcaption>
+                </figure>
+            </section>
+
+            <section>
+                <h2>Understanding Perplexity</h2>
+                <p>For a vocabulary of 9,219 tokens:</p>
+                <ul>
+                    <li><strong>Random guessing:</strong> Perplexity = 9,219</li>
+                    <li><strong>Our best model:</strong> Perplexity = 203.2 (97.8% reduction)</li>
+                    <li><strong>128k context model:</strong> Perplexity = 634.6 (93.1% reduction)</li>
+                </ul>
+
+                <div class="callout insight">
+                    <strong>Interpretation:</strong> Our best model is ~45× better than random guessing. Even the 128k model is ~15× better than random, despite the harder prediction task.
+                </div>
+            </section>
+
+            <section>
+                <h2>Next Steps</h2>
+                <ul>
+                    <li><strong>Reduce learning rate on 128k:</strong> Restart from best checkpoint with LR 3e-5</li>
+                    <li><strong>Scale dataset:</strong> Download additional SanctSound stations</li>
+                    <li><strong>Larger models:</strong> Scale to 500M–1B parameters</li>
+                    <li><strong>Evaluation metrics:</strong> Spectrogram similarity, bioacoustics classifier scores</li>
+                    <li><strong>Multi-species training:</strong> Combine whale + orca + dolphin data</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Technical Resources</h2>
+                <ul>
+                    <li><a href="https://www.cairninstitute.com/">CAIRN Institute homepage</a></li>
+                    <li>Curated release code and Hugging Face publication links will be announced via the <a href="https://www.cairninstitute.com/">CAIRN Institute homepage</a>.</li>
+                    <li><a href="https://arxiv.org/abs/2402.08476">DAC: Generative Codec Models</a></li>
+                    <li><a href="https://github.com/deepseek-ai/">DeepSeek-V4 Architecture</a></li>
+                    <li><a href="https://arxiv.org/abs/2306.00241">Muon Optimizer</a></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Summary</h2>
+                <ul>
+                    <li>Trained 7 models on <strong>103.4B whale audio tokens</strong></li>
+                    <li>Best model: <strong>479M params, 10k context, perplexity 203.2</strong></li>
+                    <li>Longest context: <strong>128k tokens (2.8 min audio)</strong>, still improving at 110k steps</li>
+                    <li>Bottleneck: 16GB GPU memory (solvable with larger GPU)</li>
+                    <li>Result: Models generate <strong>novel whale-like audio sequences</strong></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Related Reading</h2>
+                <p><a href="./marine_mammals_data_blog_post.html">Building a Training Dataset from Underwater Whale Recordings</a> — Companion post on the data processing pipeline</p>
+            </section>
+        </main>
+
+        <footer>
+            <p><strong>Questions or Feedback?</strong></p>
+            <p>Contact us at <strong>info@cairninstitute.com</strong> or visit our <a href="https://www.cairninstitute.com/">website</a>.</p>
+            <p style="margin-top: 20px; font-size: 0.9em; color: #95a5a6;">© 2026 CAIRN Institute (Cascades AI Research Institute) | Advancing AI for the Public Good</p>
+        </footer>
+    </div>
+</body>
+</html>

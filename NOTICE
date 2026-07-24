@@ -1,0 +1,15 @@
+Project DoLittle / CAIRN Marine Mammals Communication
+Copyright 2026 CAIRN Institute
+
+CAIRN Institute releases Project DoLittle software, documentation, configuration
+files, and model weights under the Apache License, Version 2.0.
+
+Project DoLittle uses derived representations of SanctSound raw passive
+acoustic data. Cite the source data as:
+
+NOAA Office of National Marine Sanctuaries and U.S. Navy. 2020. SanctSound
+Raw Passive Acoustic Data. NOAA National Centers for Environmental
+Information. https://doi.org/10.25921/saca-sp25.
+
+NOAA and NCEI do not endorse CAIRN Institute, Project DoLittle, or any
+product, service, or conclusion derived from this work.

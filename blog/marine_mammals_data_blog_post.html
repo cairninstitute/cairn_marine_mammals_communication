@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Public dataset release: 10B tokens of humpback whale song from NOAA SanctSound recordings, tokenized with 9-codebook DAC for long-context audio research.">
+    <meta name="keywords" content="deep learning, audio, marine biology, neural audio, open data, whale communication">
+    <meta name="author" content="CAIRN Institute">
+    <title>Public Dataset Release: 10B Tokens of Humpback Whale Song</title>
+    <style>
+        :root {
+            --primary: #1a3a52;
+            --secondary: #2b5a8c;
+            --accent: #4a90e2;
+            --light-bg: #f5f7fa;
+            --border: #d0d8e0;
+            --text: #2c3e50;
+            --code-bg: #2b3e50;
+            --cairn-blue: #2b5a8c;
+            --cairn-gray: #5a6c7d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background-color: #fff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+        }
+
+        header::before {
+            content: "CAIRN INSTITUTE";
+            display: block;
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            color: var(--cairn-blue);
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #7f8c8d;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag {
+            background-color: var(--light-bg);
+            color: var(--secondary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            color: var(--cairn-blue);
+            border-left: 3px solid var(--accent);
+            padding-left: 15px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+
+        .callout {
+            padding: 15px 20px;
+            border-left: 4px solid;
+            border-radius: 4px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+        }
+
+        .callout.insight {
+            border-left-color: var(--secondary);
+            background-color: #eef4fa;
+        }
+
+        .callout.focus {
+            border-left-color: var(--accent);
+            background-color: #f0f6ff;
+        }
+
+        .callout.warning {
+            border-left-color: #d9534f;
+            background-color: #fdf8f8;
+        }
+
+        .callout.stats {
+            border-left-color: var(--secondary);
+            background-color: #f5f9fc;
+        }
+
+        .blog-figure {
+            margin: 28px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: white;
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            color: #5a6c7d;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .faq {
+            margin-top: 40px;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .faq-answer {
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+
+        blockquote {
+            border-left: 4px solid var(--secondary);
+            padding-left: 20px;
+            margin-left: 0;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        footer {
+            border-top: 2px solid var(--border);
+            margin-top: 50px;
+            padding-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom 0.2s;
+        }
+
+        a:hover {
+            border-bottom-color: var(--secondary);
+        }
+
+        .reading-time {
+            color: #95a5a6;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            .container { padding: 20px 15px; }
+            table { font-size: 0.9em; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Public Dataset Release: 10B Tokens of Humpback Whale Song</h1>
+            <div class="meta">
+                <div class="meta-item">
+                    <strong>Author:</strong> CAIRN Institute
+                </div>
+                <div class="meta-item">
+                    <strong>Published:</strong> August 4, 2026
+                </div>
+                <div class="meta-item reading-time">
+                    <strong>Read time:</strong> 8–10 minutes
+                </div>
+            </div>
+            <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
+                <span class="tag">#DeepLearning</span>
+                <span class="tag">#Audio</span>
+                <span class="tag">#MarineBiology</span>
+                <span class="tag">#NeuralAudio</span>
+                <span class="tag">#OpenData</span>
+            </div>
+        </header>
+
+        <main>
+            <section>
+                <h2>Quick Summary</h2>
+                <p>We transformed <strong>322.6 hours</strong> of raw underwater recordings from NOAA's SanctSound hydrophone network into a <strong>796-million-token training dataset</strong> suitable for neural language models. Using a two-stage filtering process and a 9-codebook audio codec, we retained 88.5% of the raw data while ensuring high signal quality. The result: a structured, publicly available dataset that teaches transformer models to predict whale vocalization patterns.</p>
+                <p><strong>Scope note:</strong> the <strong>796M-token</strong> figure refers to the detector-filtered training subset used for model training (<code>detector_score ≥ 0.7</code>). The full DAC-tokenized SanctSound humpback corpus is much larger: <strong>~10.4 billion tokens</strong> across <strong>~485,804 chunks</strong>.</p>
+            </section>
+
+            <section>
+                <h2>The Challenge: From Hours to Models</h2>
+                <p>Training neural networks on audio is hard. Training them on <em>whale audio</em> is harder still — the data is noisy, sparse, and expensive to acquire. Traditional approaches either waste data through aggressive filtering or contaminate training sets with poor-quality samples.</p>
+                <p>We needed a pipeline that could:</p>
+                <ul>
+                    <li>✓ Process hundreds of hours of continuous recordings</li>
+                    <li>✓ Identify and filter segments containing whale calls</li>
+                    <li>✓ Preserve full audio fidelity for neural codecs</li>
+                    <li>✓ Make the data publicly available for reproducible research</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>The Dataset: SanctSound Hawaiian Deployment</h2>
+                <p>Our source data comes from <strong>NOAA's SanctSound project</strong> — a network of underwater hydrophones deployed across U.S. national marine sanctuaries. We focused on recordings from four Hawaiian stations monitoring humpback whales:</p>
+
+                <table>
+                    <tr>
+                        <th>Station</th>
+                        <th>Purpose</th>
+                        <th>Period</th>
+                    </tr>
+                    <tr>
+                        <td><strong>HI01</strong></td>
+                        <td>Humpback whale habitat monitoring</td>
+                        <td>2018–2022</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HI03</strong></td>
+                        <td>Hawaiian Islands Humpback National Marine Sanctuary</td>
+                        <td>2018–2022</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HI04</strong></td>
+                        <td>Additional humpback monitoring site</td>
+                        <td>2018–2022</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HI05</strong></td>
+                        <td>Extended deployment with high whale activity</td>
+                        <td>2018–2022</td>
+                    </tr>
+                </table>
+
+                <p><strong>Raw data specs:</strong></p>
+                <ul>
+                    <li>Format: Long-duration FLAC files (typically 1–4 hours each)</li>
+                    <li>Sample rate: 44,100 Hz</li>
+                    <li>Total duration: <strong>322.6 hours</strong> across 286 source files</li>
+                    <li>Data source: <a href="https://console.cloud.google.com/storage/browser/noaa-passive-bioacoustic">NOAA Passive Bioacoustic Monitoring (GCS bucket)</a> — <strong>publicly available, anonymously accessible</strong></li>
+                </ul>
+
+                <div class="callout insight">
+                    <strong>Key Insight:</strong> This dataset is public! If you want to reproduce this work or build your own whale models, the source recordings are freely available on Google Cloud Storage.
+                </div>
+            </section>
+
+            <section>
+                <h2>The 7-Stage Processing Pipeline</h2>
+                <p>Each recording passes through a carefully sequenced pipeline designed to maximize signal quality while minimizing data loss:</p>
+
+                <figure class="blog-figure">
+                    <img src="assets/dataset_pipeline_flow.svg" alt="Diagram of the seven-stage SanctSound processing flow: calibration-tone removal, bandpass filtering, segmentation, peak and loudness normalization, heuristic quality filtering, and DAC 9-codebook tokenization. It also shows the separate detector-score threshold that selects the high-confidence training subset from the full release corpus.">
+                    <figcaption>The seven processing stages create the full DAC9 release corpus. A separate detector-score threshold (≥0.7) selects the high-confidence training subset used by the public model configurations.</figcaption>
+                </figure>
+
+                <h3>Stage 1: Skip Test Tone</h3>
+                <p>Hydrophone deployments begin with a calibration tone to verify that the recorder is functioning correctly. These tones—typically a steady sine wave at 1 kHz—would contaminate the training data if left in place.</p>
+                <p><strong>Action:</strong> Automatically detect and remove the test tone (usually the first 30–60 seconds of each file).</p>
+
+                <h3>Stage 2: Bandpass Filter</h3>
+                <p>Not all frequencies matter. Whale vocalizations occupy a specific frequency range; boat noise, wave action, and other underwater sounds occupy different ranges.</p>
+
+                <p><strong>Filter specs:</strong></p>
+                <ul>
+                    <li>Frequency range: <strong>80 Hz – 4 kHz</strong> (where humpback whale calls concentrate)</li>
+                    <li>Effect: Attenuates boat noise (typically >8 kHz), wind-driven waves (<50 Hz)</li>
+                    <li>Result: ~6 dB SNR improvement on average</li>
+                </ul>
+
+                <figure class="blog-figure">
+                    <img src="assets/dataset_raw_vs_filtered_spectrogram.png" alt="Real SanctSound humpback sample before and after preprocessing, comparing the raw aligned source excerpt against the processed training chunk used by the pipeline.">
+                    <figcaption>Real SanctSound humpback sample before and after preprocessing. Using the same dB scale and a 0–4 kHz whale-band view, the processed chunk shows reduced broadband background and more legible harmonic structure after 80 Hz–20 kHz bandpass filtering, silence handling, peak normalization, and loudness normalization.</figcaption>
+                </figure>
+
+                <div class="callout" style="margin-top: 1rem;">
+                    <strong>Listen to the same example:</strong>
+                    <p style="margin: 0.75rem 0 0.5rem 0;"><strong>Raw aligned source excerpt</strong></p>
+                    <audio controls preload="none" style="width: 100%;">
+                        <source src="assets/source_audio/sample_5_raw_aligned.wav" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <p style="margin: 1rem 0 0.5rem 0;"><strong>Processed training chunk</strong></p>
+                    <audio controls preload="none" style="width: 100%;">
+                        <source src="assets/source_audio/sample_5_processed.wav" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <div class="callout warning">
+                    <strong>Species Note:</strong> This bandpass is optimized for humpback whales. Blue and fin whales have fundamentals <400 Hz and would be over-filtered. Orca calls extend higher (up to 8 kHz), requiring a modified filter.
+                </div>
+
+                <h3>Stage 3: Segment</h3>
+                <p>Continuous multi-hour recordings are sliced into fixed <strong>30-second chunks</strong>. This chunk size is a deliberate trade-off:</p>
+                <ul>
+                    <li><strong>Too short</strong> (e.g., 10s): Can't capture full song phrases (humpback songs typically last 10–20s)</li>
+                    <li><strong>Too long</strong> (e.g., 5 min): Makes quality scoring expensive</li>
+                    <li><strong>Sweet spot (30s):</strong> Captures most whale vocalizations while remaining manageable</li>
+                </ul>
+
+                <h3>Stages 4–7: Processing & Tokenization</h3>
+                <p>Stages 4 and 5 normalize audio (peak and loudness). Stage 6 applies fast heuristic filtering using three signal-processing metrics (whale_cv, energy_ratio, min_whale_rms). Stage 7 encodes filtered chunks into DAC 9-codebook tokens.</p>
+            </section>
+
+            <section>
+                <h2>Tokenization: The DAC 9-Codebook Encoding</h2>
+                <p>The audio codec is the bridge between raw waveforms and transformer models. We use the <strong>DAC 44 kHz model</strong>, which produces tokens across 9 codebooks—each codebook captures progressively finer details of the audio signal.</p>
+
+                <h3>Codec Specifications</h3>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Model</strong></td>
+                        <td>DAC 44kHz</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sample rate</strong></td>
+                        <td>44,100 Hz</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Codebooks</strong></td>
+                        <td>9 (multi-scale residuals)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total vocabulary size</strong></td>
+                        <td>9,219</td>
+                    </tr>
+                    <tr>
+                        <td><strong>30-second chunk → tokens</strong></td>
+                        <td>~23,247 tokens</td>
+                    </tr>
+                </table>
+
+                <h3>Interleaved Codebook Format</h3>
+                <p>The 9 codebooks are flattened into a single 1D sequence using <strong>interleaved encoding</strong>:</p>
+                <div class="code-block">
+CB0_t0, CB1_t0, CB2_t0, ..., CB8_t0, CB0_t1, CB1_t1, ..., CB8_t1, ...
+                </div>
+
+                <figure class="blog-figure">
+                    <img src="assets/dataset_interleaving_diagram.svg" alt="Diagram showing how the stored 9-by-time DAC code matrix is assigned codebook-specific token ranges and flattened in time-major order into the 1D sequence used for training.">
+                    <figcaption>Each stored DAC frame contributes nine consecutive model tokens—one from every codebook. Codebook-specific offsets keep those token ranges distinct before the matrix is flattened in time-major order.</figcaption>
+                </figure>
+            </section>
+
+            <section>
+                <h2>Quality Filtering: Two-Stage Approach</h2>
+                <p>We apply quality filtering at two points:</p>
+                <ul>
+                    <li><strong>Stage 1 (Heuristic):</strong> Fast signal-processing heuristics filter out obviously empty chunks</li>
+                    <li><strong>Stage 2 (Neural):</strong> Each chunk receives a confidence score from a whale vocalization detector</li>
+                </ul>
+
+                <table>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr>
+                        <td>Total chunks processed</td>
+                        <td>38,709</td>
+                    </tr>
+                    <tr>
+                        <td>Passing detector ≥ 0.7</td>
+                        <td><strong>34,262 (88.5%)</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Mean detector score</td>
+                        <td>0.856</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Training audio hours</strong></td>
+                        <td><strong>285.5 hours (88.5% retention)</strong></td>
+                    </tr>
+                </table>
+
+                <div class="callout stats">
+                    <strong>What This Means:</strong> 88.5% data retention is excellent for audio filtering. We're not throwing away most of the data; we're just eliminating the most obviously bad chunks.
+                </div>
+            </section>
+
+            <section>
+                <h2>Chunk Adjacency: Building Longer Training Sequences</h2>
+                <p>30-second chunks are too short for transformers to learn long-range structure. We concatenate multiple chunks to create longer training windows, using special tokens to mark temporal continuity:</p>
+                <ul>
+                    <li><strong>SEP token (9218):</strong> Adjacent chunks—they were recorded consecutively</li>
+                    <li><strong>SEP_GAP token (9217):</strong> Non-adjacent chunks—different sessions or temporal gap</li>
+                </ul>
+
+                <h3>Adjacency Statistics</h3>
+                <table>
+                    <tr>
+                        <th>Run Length</th>
+                        <th>Count</th>
+                        <th>Duration</th>
+                    </tr>
+                    <tr>
+                        <td>Isolated (1 chunk)</td>
+                        <td>6,296</td>
+                        <td>30s</td>
+                    </tr>
+                    <tr>
+                        <td>2 adjacent chunks</td>
+                        <td>2,317</td>
+                        <td>60s</td>
+                    </tr>
+                    <tr>
+                        <td>3 adjacent chunks</td>
+                        <td>1,277</td>
+                        <td>90s</td>
+                    </tr>
+                    <tr>
+                        <td>6–10 adjacent</td>
+                        <td>1,186</td>
+                        <td>3–5 min</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Longest run</strong></td>
+                        <td><strong>29 chunks</strong></td>
+                        <td><strong>14.5 min continuous</strong></td>
+                    </tr>
+                </table>
+
+                <p><strong>Mean run length:</strong> 2.7 chunks (~81 seconds of continuous audio)</p>
+
+                <figure class="blog-figure">
+                    <img src="assets/dataset_adjacency_distribution.png" alt="Distribution of adjacent chunk run lengths in the detector-filtered training subset, reconstructed from chunk_scores.csv with detector_score at least 0.7.">
+                    <figcaption>Distribution of adjacent chunk run lengths in the detector-filtered training subset (detector_score ≥ 0.7), reconstructed from chunk_scores.csv. This is the same filtered subset summarized in the table above.</figcaption>
+                </figure>
+
+                <div class="callout focus">
+                    <strong>What This Means:</strong> Our training windows often contain genuinely continuous whale audio, not just random concatenations. For a 128k-token context window, a typical training window might contain 5–6 chunks with some continuous segments joined by SEP tokens.
+                </div>
+            </section>
+
+            <section>
+                <h2>Frequently Asked Questions</h2>
+                <div class="faq">
+                    <div class="faq-item">
+                        <div class="faq-question">What's DAC?</div>
+                        <div class="faq-answer"><strong>DAC</strong> (Descript Audio Codec) is a neural audio codec—a neural network trained to compress audio into discrete codes using residual vector quantization (RVQ). Unlike traditional audio codecs (MP3, AAC), DAC produces a sequence of discrete tokens that can be fed to transformer language models, enabling next-token prediction on audio.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Why 9 codebooks?</div>
+                        <div class="faq-answer">Residual vector quantization works by first encoding the coarse signal, then iteratively refining it. Each codebook captures finer details. 9 codebooks is a good balance—more codebooks = higher fidelity but slower inference; fewer codebooks = faster but lower quality. For whale audio, 9 is sufficient to preserve vocalizations accurately.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">Can I use this dataset?</div>
+                        <div class="faq-answer">Yes! The raw SanctSound recordings are publicly available on Google Cloud Storage (<code>gs://noaa-passive-bioacoustic/</code>) with anonymous access. You can download them, process them, and use them for your own research.</div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question">How do I reproduce this?</div>
+                        <div class="faq-answer">1. Download raw FLAC files from <code>gs://noaa-passive-bioacoustic/</code><br>2. Run the processing pipeline (7 stages)<br>3. Use the tokenized .npy files for training<br>4. For curated release code, dataset links, checkpoint links, and publication updates, see the <a href="https://www.cairninstitute.com/">CAIRN Institute homepage</a></div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Further Reading</h2>
+                <ul>
+                    <li><a href="https://www.cairninstitute.com/">CAIRN Institute homepage</a></li>
+                    <li><a href="https://sanctsound.ioos.us/">NOAA SanctSound Project</a></li>
+                    <li><a href="https://arxiv.org/abs/2402.08476">DAC: Generative Codec Models</a></li>
+                    <li><a href="./marine_mammals_training_blog_post.html">Training Neural Audio Models on Whale Communication</a> — Companion post</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p><strong>Questions or Feedback?</strong></p>
+            <p>Contact us at <strong>info@cairninstitute.com</strong> or visit our <a href="https://www.cairninstitute.com/">website</a>.</p>
+            <p style="margin-top: 20px; font-size: 0.9em; color: #95a5a6;">© 2026 CAIRN Institute (Cascades AI Research Institute) | Advancing AI for the Public Good</p>
+        </footer>
+    </div>
+</body>
+</html>

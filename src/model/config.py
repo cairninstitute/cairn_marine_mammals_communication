@@ -1,0 +1,134 @@
+"""Model configuration for the causal transformer."""
+
+from dataclasses import dataclass
+
+
+@dataclass
+class TransformerConfig:
+    """Configuration for the causal transformer decoder."""
+
+    vocab_size: int = 74          # Set to match tokenizer vocab
+    max_seq_len: int = 256        # Maximum sequence length
+    n_layers: int = 6             # Number of transformer blocks
+    n_heads: int = 4              # Number of attention heads
+    d_model: int = 256            # Model dimension
+    d_ff: int = 1024              # Feed-forward inner dimension
+    dropout: float = 0.1          # Dropout rate
+    use_gradient_checkpointing: bool = False
+
+    # Sliding Window Attention
+    swa_window_size: int = 0      # 0 = all full attention
+    full_attention_every_n: int = 0  # Every N-th layer uses full attn, rest SWA
+                                     # e.g. 5 → 4 SWA per 1 full; 0 = all full
+
+    # Mixture of Experts — ALL FFN layers use MoE when n_experts > 1
+    n_experts: int = 1            # 1 = dense FFN, >1 = MoE on all layers
+    moe_top_k: int = 2            # Experts selected per token
+    expert_d_ff: int = 0          # Expert intermediate dim (0 = use d_ff)
+    moe_aux_weight: float = 0.01  # Load-balancing loss weight (ignored when use_bias_routing=True)
+    use_bias_routing: bool = False # Per-expert learned bias instead of aux_loss (DeepSeek V4-style)
+
+    # Compressed global attention (NSA-style, DeepSeek V4-inspired)
+    # When compressed_attn_stride > 0, global layers (every full_attention_every_n) use
+    # strided-compressed K/V instead of full O(T²) attention.
+    # stride=72 = 8 audio timesteps × 9 codebooks → 1820 anchors across 128K context.
+    compressed_attn_stride: int = 0    # 0 = use full attention for global layers
+    compressed_attn_chunk: int = 2048  # query chunk size for memory-bounded computation
+
+    # Split QKV projections: use separate q_proj/k_proj/v_proj instead of fused qkv_proj.
+    # Reduces backward activation peak by ~380 MB per block recomputation by avoiding
+    # the 576 MB fused tensor that is kept alive because v is a view of it.
+    # Required for 128K context on 16 GB VRAM. Incompatible with fused-QKV checkpoints.
+    use_split_qkv: bool = False
+
+    @property
+    def d_head(self) -> int:
+        return self.d_model // self.n_heads
+
+    def param_count_estimate(self) -> int:
+        """Rough parameter count estimate."""
+        # Embedding
+        emb = self.vocab_size * self.d_model
+        # Per layer: attn (4 * d_model^2) + ffn (2 * d_model * d_ff) + norms
+        per_layer = 4 * self.d_model ** 2 + 2 * self.d_model * self.d_ff + 4 * self.d_model
+        # Output head
+        head = self.d_model * self.vocab_size
+        return emb + self.n_layers * per_layer + head
+
+
+# Presets
+TINY = TransformerConfig(
+    n_layers=6, n_heads=4, d_model=256, d_ff=1024,
+)  # ~8M params
+
+SMALL = TransformerConfig(
+    n_layers=8, n_heads=8, d_model=512, d_ff=2048,
+)  # ~35M params
+
+MEDIUM = TransformerConfig(
+    n_layers=12, n_heads=12, d_model=768, d_ff=3072,
+)  # ~85M params
+
+LARGE = TransformerConfig(
+    n_layers=16, n_heads=16, d_model=1024, d_ff=4096,
+    use_gradient_checkpointing=True,
+)  # ~200M params
+
+XLARGE = TransformerConfig(
+    n_layers=24, n_heads=16, d_model=1280, d_ff=5120,
+    use_gradient_checkpointing=True,
+)  # ~350M params
+
+SMALL_SWA_MOE = TransformerConfig(
+    n_layers=8, n_heads=8, d_model=512, d_ff=2048,
+    swa_window_size=512, full_attention_every_n=5,
+    n_experts=8, moe_top_k=2, expert_d_ff=512,
+)
+
+MEDIUM_SWA_MOE = TransformerConfig(
+    n_layers=12, n_heads=12, d_model=768, d_ff=3072,
+    swa_window_size=1024, full_attention_every_n=5,
+    n_experts=8, moe_top_k=2, expert_d_ff=768,
+)
+
+LARGE_SWA_MOE = TransformerConfig(
+    n_layers=16, n_heads=16, d_model=1024, d_ff=4096,
+    swa_window_size=1024, full_attention_every_n=5,
+    n_experts=8, moe_top_k=2, expert_d_ff=1024,
+    use_gradient_checkpointing=True,
+)
+
+MEDIUM_NSA_MOE = TransformerConfig(
+    # Same width/depth as MEDIUM_SWA_MOE; differs in attention and routing.
+    n_layers=12, n_heads=12, d_model=768, d_ff=3072,
+    # Local: SWA with 2048-token window (~2.6s at 775 tokens/sec interleaved)
+    swa_window_size=2048, full_attention_every_n=5,
+    # Global: compressed attention — stride 72 = 8 audio timesteps × 9 codebooks
+    # At 128K context → ~1820 anchor positions covering ~169s of audio
+    compressed_attn_stride=72, compressed_attn_chunk=2048,
+    # MoE: 16 experts, top-2, bias routing (no aux_loss)
+    n_experts=16, moe_top_k=2, expert_d_ff=768,
+    moe_aux_weight=0.0, use_bias_routing=True,
+    use_gradient_checkpointing=True,
+)
+
+PRESETS = {
+    "tiny": TINY,
+    "small": SMALL,
+    "medium": MEDIUM,
+    "large": LARGE,
+    "xlarge": XLARGE,
+    "small_swa_moe": SMALL_SWA_MOE,
+    "medium_swa_moe": MEDIUM_SWA_MOE,
+    "large_swa_moe": LARGE_SWA_MOE,
+    "medium_nsa_moe": MEDIUM_NSA_MOE,
+}
+
+
+def get_config(preset: str, **overrides) -> TransformerConfig:
+    """Get a config preset with optional overrides."""
+    cfg = PRESETS[preset]
+    # Create a new instance with overrides
+    fields = {k: v for k, v in cfg.__dict__.items()}
+    fields.update(overrides)
+    return TransformerConfig(**fields)

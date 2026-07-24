@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Data and artifacts
+data/
+models/
+runs/
+logs/
+checkpoints/
+wandb/
+
+# Notebook and editor state
+.ipynb_checkpoints/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary audio outputs
+*.wav
+*.flac
+*.mp3
+
+# Local auth and caches
+.claude/

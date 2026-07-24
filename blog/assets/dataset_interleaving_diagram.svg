@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">Interleaving nine DAC codebooks into a token sequence</title>
+  <desc id="desc">A nine-row, three-column DAC code matrix is given codebook-specific token offsets and flattened by time step. Each group of nine output tokens contains one token from every codebook for the same audio frame.</desc>
+  <style>
+    text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; fill: #15283b; }
+    .title { font-size: 37px; font-weight: 750; }.subtitle { font-size: 21px; fill: #486174; }.group { font-size: 19px; font-weight: 750; letter-spacing: 1px; fill: #486174; }.label { font-size: 19px; font-weight: 750; }.detail { font-size: 17px; fill: #486174; }.token { font-size: 15px; font-weight: 750; text-anchor: middle; fill: #15283b; }.tiny { font-size: 19px; fill: #486174; text-anchor: middle; }
+  </style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6b8496"/></marker></defs>
+  <rect width="1200" height="900" fill="#fbfdff"/><rect x="22" y="22" width="1156" height="856" rx="18" fill="#fff" stroke="#d7e3ec" stroke-width="2"/>
+  <text x="62" y="76" class="title">How 9 DAC codebooks become one token sequence</text><text x="62" y="106" class="subtitle">The model reads one time-major 1D sequence, while the codec stores one row per codebook.</text>
+
+  <text x="62" y="154" class="group">1. STORED DAC CODES</text><text x="62" y="179" class="detail">Shape: (9 codebooks, T frames) · each stored value is a local code 1–1024 (0 is PAD)</text>
+  <g transform="translate(62 205)">
+    <text x="165" y="-12" class="tiny">time t₀</text><text x="265" y="-12" class="tiny">time t₁</text><text x="365" y="-12" class="tiny">time t₂</text>
+    <g fill="#eef4f8" stroke="#b8cad7"><rect x="105" y="0" width="80" height="34"/><rect x="205" y="0" width="80" height="34"/><rect x="305" y="0" width="80" height="34"/><rect x="105" y="39" width="80" height="34"/><rect x="205" y="39" width="80" height="34"/><rect x="305" y="39" width="80" height="34"/><rect x="105" y="78" width="80" height="34"/><rect x="205" y="78" width="80" height="34"/><rect x="305" y="78" width="80" height="34"/><rect x="105" y="117" width="80" height="34"/><rect x="205" y="117" width="80" height="34"/><rect x="305" y="117" width="80" height="34"/><rect x="105" y="156" width="80" height="34"/><rect x="205" y="156" width="80" height="34"/><rect x="305" y="156" width="80" height="34"/><rect x="105" y="195" width="80" height="34"/><rect x="205" y="195" width="80" height="34"/><rect x="305" y="195" width="80" height="34"/><rect x="105" y="234" width="80" height="34"/><rect x="205" y="234" width="80" height="34"/><rect x="305" y="234" width="80" height="34"/><rect x="105" y="273" width="80" height="34"/><rect x="205" y="273" width="80" height="34"/><rect x="305" y="273" width="80" height="34"/><rect x="105" y="312" width="80" height="34"/><rect x="205" y="312" width="80" height="34"/><rect x="305" y="312" width="80" height="34"/></g>
+    <g class="label"><text x="0" y="23">CB0</text><text x="0" y="62">CB1</text><text x="0" y="101">CB2</text><text x="0" y="140">CB3</text><text x="0" y="179">CB4</text><text x="0" y="218">CB5</text><text x="0" y="257">CB6</text><text x="0" y="296">CB7</text><text x="0" y="335">CB8</text></g>
+    <g class="tiny"><text x="145" y="22">c₀,₀</text><text x="245" y="22">c₀,₁</text><text x="345" y="22">c₀,₂</text><text x="145" y="61">c₁,₀</text><text x="245" y="61">c₁,₁</text><text x="345" y="61">c₁,₂</text><text x="145" y="100">c₂,₀</text><text x="245" y="100">c₂,₁</text><text x="345" y="100">c₂,₂</text><text x="145" y="139">c₃,₀</text><text x="245" y="139">c₃,₁</text><text x="345" y="139">c₃,₂</text><text x="145" y="178">c₄,₀</text><text x="245" y="178">c₄,₁</text><text x="345" y="178">c₄,₂</text><text x="145" y="217">c₅,₀</text><text x="245" y="217">c₅,₁</text><text x="345" y="217">c₅,₂</text><text x="145" y="256">c₆,₀</text><text x="245" y="256">c₆,₁</text><text x="345" y="256">c₆,₂</text><text x="145" y="295">c₇,₀</text><text x="245" y="295">c₇,₁</text><text x="345" y="295">c₇,₂</text><text x="145" y="334">c₈,₀</text><text x="245" y="334">c₈,₁</text><text x="345" y="334">c₈,₂</text></g>
+  </g>
+
+  <path d="M475 370 H565" stroke="#6b8496" stroke-width="3" marker-end="url(#arrow)"/><text x="520" y="343" class="tiny">add CB offset</text>
+  <rect x="590" y="192" width="548" height="221" rx="14" fill="#f5f2fc" stroke="#d8cfee" stroke-width="2"/>
+  <text x="618" y="225" class="group">2. GIVE EVERY CODEBOOK ITS OWN TOKEN RANGE</text>
+  <text x="618" y="252" class="detail">token = local code + (codebook index × 1,024)</text>
+  <g class="detail"><text x="618" y="285">CB0: 1–1,024</text><text x="800" y="285">CB1: 1,025–2,048</text><text x="618" y="316">CB2: 2,049–3,072</text><text x="800" y="316">…</text><text x="618" y="347">CB8: 8,193–9,216</text></g>
+  <text x="618" y="386" class="detail">This prevents identical local codes from different codebooks from colliding.</text>
+
+  <path d="M600 432 V565" stroke="#6b8496" stroke-width="3" marker-end="url(#arrow)"/><text x="618" y="505" class="tiny">transpose by time, then flatten</text>
+  <text x="62" y="615" class="group">3. TIME-MAJOR 1D SEQUENCE FOR THE TRANSFORMER</text>
+  <text x="62" y="644" class="detail">Within each time frame, emit CB0 through CB8 in order; then advance to the next frame.</text>
+  <g transform="translate(62 675)">
+    <rect width="450" height="104" rx="12" fill="#edf5fa" stroke="#b8cfdf" stroke-width="2"/><text x="18" y="28" class="label">time t₀</text>
+    <rect x="18" y="43" width="42" height="35" rx="5" fill="#b7d9e9"/><rect x="64" y="43" width="42" height="35" rx="5" fill="#c4d9a4"/><rect x="110" y="43" width="42" height="35" rx="5" fill="#f1cf88"/><rect x="156" y="43" width="42" height="35" rx="5" fill="#efb2a8"/><rect x="202" y="43" width="42" height="35" rx="5" fill="#cdb6df"/><rect x="248" y="43" width="42" height="35" rx="5" fill="#8fc9bc"/><rect x="294" y="43" width="42" height="35" rx="5" fill="#aebfe8"/><rect x="340" y="43" width="42" height="35" rx="5" fill="#e7b2ce"/><rect x="386" y="43" width="42" height="35" rx="5" fill="#cfcf93"/>
+    <g class="token"><text x="39" y="65">CB0</text><text x="85" y="65">CB1</text><text x="131" y="65">CB2</text><text x="177" y="65">CB3</text><text x="223" y="65">CB4</text><text x="269" y="65">CB5</text><text x="315" y="65">CB6</text><text x="361" y="65">CB7</text><text x="407" y="65">CB8</text></g>
+    <rect x="500" width="450" height="104" rx="12" fill="#edf5fa" stroke="#b8cfdf" stroke-width="2"/><text x="518" y="28" class="label">time t₁</text>
+    <rect x="518" y="43" width="42" height="35" rx="5" fill="#b7d9e9"/><rect x="564" y="43" width="42" height="35" rx="5" fill="#c4d9a4"/><rect x="610" y="43" width="42" height="35" rx="5" fill="#f1cf88"/><rect x="656" y="43" width="42" height="35" rx="5" fill="#efb2a8"/><rect x="702" y="43" width="42" height="35" rx="5" fill="#cdb6df"/><rect x="748" y="43" width="42" height="35" rx="5" fill="#8fc9bc"/><rect x="794" y="43" width="42" height="35" rx="5" fill="#aebfe8"/><rect x="840" y="43" width="42" height="35" rx="5" fill="#e7b2ce"/><rect x="886" y="43" width="42" height="35" rx="5" fill="#cfcf93"/>
+    <g class="token"><text x="539" y="65">CB0</text><text x="585" y="65">CB1</text><text x="631" y="65">CB2</text><text x="677" y="65">CB3</text><text x="723" y="65">CB4</text><text x="769" y="65">CB5</text><text x="815" y="65">CB6</text><text x="861" y="65">CB7</text><text x="907" y="65">CB8</text></g>
+    <path d="M450 60 H490" stroke="#6b8496" stroke-width="3" marker-end="url(#arrow)"/>
+  </g>
+  <text x="62" y="825" class="detail">Each 9-token group represents one DAC frame (512 audio samples, ~11.6 ms at 44.1 kHz).</text>
+</svg>
