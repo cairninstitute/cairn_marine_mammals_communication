@@ -51,7 +51,7 @@ Included public paths:
 - `scripts/train.py`
   - training entrypoint for released configs
 - `scripts/generate_dac_9cb_unified.py`
-  - unified prompted generation for released 10k, 64k, and 128k DAC 9-codebook checkpoints
+  - unified prompted generation for released 10k, 32k, and 128k DAC 9-codebook checkpoints
 - `scripts/generate_dac_9cb_prompted.py`
   - legacy prompted generation script for the 10k context checkpoint
 - `scripts/generate_dac_9cb_prompted_128k.py`
@@ -60,7 +60,7 @@ Included public paths:
 Included configs:
 
 - `configs/audio_large_swa_moe_sanctsound_humpback_dac_9cb_10k.yaml`
-- `configs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_64k.yaml`
+- `configs/audio_medium_swa_moe_sanctsound_humpback_dac_9cb_32k.yaml`
 - `configs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_128k.yaml`
 
 Included implementation packages:
@@ -73,13 +73,14 @@ Included implementation packages:
 Included documentation:
 
 - `docs/whale_audio_pipeline.md`
+- `docs/model_diagrams.md` — regenerate architecture SVGs from training configs
 
 ## Blog Post Coverage
 
 This repository is intended to support the public claims in:
 
 - the dataset post describing the SanctSound humpback pipeline, DAC 44 kHz tokenization, interleaving, and `SEP` / `SEP_GAP` boundaries
-- the training post describing the released 10k, 64k, and 128k model families
+- the training post describing the released 10k, 32k, and 128k model families
 
 ## External Artifacts
 
@@ -135,10 +136,10 @@ Generate audio from any released checkpoint with the unified entrypoint:
 PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_large_swa_moe_sanctsound_humpback_dac_9cb_10k_v2/best_model.pt
 ```
 
-Generate audio from the 64k checkpoint:
+Generate audio from the 32k checkpoint:
 
 ```bash
-PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_64k/best_model.pt
+PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_swa_moe_sanctsound_humpback_dac_9cb_32k/best_model.pt
 ```
 
 Generate audio from the 128k checkpoint:
@@ -150,7 +151,7 @@ PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/aud
 Use an explicit tokenized prompt file and control prompt/output lengths:
 
 ```bash
-PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_64k/best_model.pt   --prompt-file sanctsound_hi05_01_000003.npy   --prompt-token-offset 0   --prompt-token-length 3072   --max-new-tokens 6144   --decode-audio both
+PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_swa_moe_sanctsound_humpback_dac_9cb_32k/best_model.pt   --prompt-file sanctsound_hi05_01_000003.npy   --prompt-token-offset 0   --prompt-token-length 3072   --max-new-tokens 6144   --decode-audio both
 ```
 
 Save generated continuation only, not prompt+continuation:
@@ -214,13 +215,13 @@ PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/aud
 Explicit prompt file with exact token slice:
 
 ```bash
-PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_64k/best_model.pt   --prompt-file sanctsound_hi05_01_000003.npy   --prompt-token-offset 2048   --prompt-token-length 4096   --max-new-tokens 8192   --decode-audio both
+PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_swa_moe_sanctsound_humpback_dac_9cb_32k/best_model.pt   --prompt-file sanctsound_hi05_01_000003.npy   --prompt-token-offset 2048   --prompt-token-length 4096   --max-new-tokens 8192   --decode-audio both
 ```
 
 Force standard generation mode:
 
 ```bash
-PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_64k/best_model.pt   --prompt-file sanctsound_hi05_01_000003.npy   --mode standard   --temperature 0.8   --top-k 60
+PYTHONPATH=. python3 scripts/generate_dac_9cb_unified.py   --checkpoint runs/audio_medium_swa_moe_sanctsound_humpback_dac_9cb_32k/best_model.pt   --prompt-file sanctsound_hi05_01_000003.npy   --mode standard   --temperature 0.8   --top-k 60
 ```
 
 Force SEP-stopping mode:

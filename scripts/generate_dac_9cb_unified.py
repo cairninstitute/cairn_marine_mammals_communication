@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Unified prompted audio generation for released MMC DAC 9-codebook checkpoints.
 
-Supports released 10k, 64k, and 128k checkpoints by reconstructing architecture
+Supports released 10k, 32k, and 128k checkpoints by reconstructing architecture
 from the checkpoint itself.
 """
 

@@ -64,17 +64,19 @@ The curated repo currently includes the public configs most directly tied to the
 
 - `configs/audio_large_swa_moe_sanctsound_humpback_dac_9cb_10k.yaml`
   - 10k context training / inference path
-- `configs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_64k.yaml`
-  - 64k context path
+- `configs/audio_medium_swa_moe_sanctsound_humpback_dac_9cb_32k.yaml`
+  - 32k Medium SWA+MoE release path
 - `configs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_128k.yaml`
   - 128k context path with `SEP` / `SEP_GAP` boundary support
 
 Suggested public naming on Hugging Face:
 
 - model repo: `cairninstitute/mmc-humpback-dac9-10k`
-- model repo: `cairninstitute/mmc-humpback-dac9-64k`
+- model repo: `cairninstitute/mmc-humpback-dac9-32k`
 - model repo: `cairninstitute/mmc-humpback-dac9-128k`
 - dataset repo: `cairninstitute/mmc-sanctsound-humpback-dac9`
+
+The 64k NSA config is retained at `configs/historical/` for historical reference and is not a release artifact.
 
 These names are suggestions only. The important requirement is that the README or model card clearly maps each released artifact to one of the included config files.
 
