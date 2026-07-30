@@ -244,6 +244,23 @@ PYTHONPATH=. python3 scripts/describe_checkpoint.py runs/audio_medium_nsa_moe_sa
 
 Fine-tune from a released inference checkpoint:
 
+### Checkpoint weight analysis
+
+Analyze weights by transformer layer and architectural structure (attention,
+MoE router, experts, norms, embeddings). Totals de-duplicate tied weights such
+as the token embedding and language-model head:
+
+```bash
+PYTHONPATH=. python3 scripts/analyze_checkpoint_weights.py \
+  runs/audio_large_swa_moe_sanctsound_humpback_dac_9cb_10k_v2/best_model.pt \
+  --json-out analysis/reports/model_weight_analysis.json
+```
+
+The command produces a self-contained `mmc-weight-report/v2` including tensor
+and per-attention-head statistics. Use `--summary-only` to omit those detailed
+records. The static explorer and its sanitized released reports are documented
+in [`analysis/README.md`](analysis/README.md).
+
 ```bash
 PYTHONPATH=. python3 scripts/train.py configs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_128k.yaml \
   --init-from runs/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_128k/best_model.pt
