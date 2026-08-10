@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How Project DoLittle's Hybrid SWA MoE and DeepSeek-style Hybrid NSA MoE architectures extend audio context while preserving a causal transformer decoder.">
+  <meta name="keywords" content="bioacoustics, humpback whale song, neural audio, sliding window attention, mixture of experts, native sparse attention">
+  <meta name="author" content="CAIRN Institute">
+  <title>Two Hybrid Architectures for Long-Context Whale Audio</title>
+  <style>
+        :root {
+            --primary: #1a3a52;
+            --secondary: #2b5a8c;
+            --accent: #4a90e2;
+            --light-bg: #f5f7fa;
+            --border: #d0d8e0;
+            --text: #2c3e50;
+            --code-bg: #2b3e50;
+            --cairn-blue: #2b5a8c;
+            --cairn-gray: #5a6c7d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.8;
+            color: var(--text);
+            background-color: #fff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            border-bottom: 2px solid var(--secondary);
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+            background-color: #ffffff;
+        }
+
+        header::before {
+            content: "CAIRN INSTITUTE";
+            display: block;
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            color: var(--cairn-blue);
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            font-size: 0.95em;
+            color: #7f8c8d;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tag {
+            background-color: var(--light-bg);
+            color: var(--secondary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            color: var(--cairn-blue);
+            border-left: 3px solid var(--accent);
+            padding-left: 15px;
+            font-weight: 600;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #34495e;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background-color: var(--secondary);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+
+        .callout {
+            padding: 15px 20px;
+            border-left: 4px solid;
+            border-radius: 4px;
+            margin: 20px 0;
+            background-color: #f8f9fa;
+        }
+
+        .callout.insight {
+            border-left-color: var(--secondary);
+            background-color: #eef4fa;
+        }
+
+        .callout.focus {
+            border-left-color: var(--accent);
+            background-color: #f0f6ff;
+        }
+
+        .callout.warning {
+            border-left-color: #d9534f;
+            background-color: #fdf8f8;
+        }
+
+        .callout.stats {
+            border-left-color: var(--secondary);
+            background-color: #f5f9fc;
+        }
+
+        .blog-figure {
+            margin: 28px 0;
+            text-align: center;
+        }
+
+        .blog-figure img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: white;
+        }
+
+        .blog-figure figcaption {
+            margin-top: 10px;
+            color: #5a6c7d;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .code-block {
+            background-color: var(--code-bg);
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+
+        blockquote {
+            border-left: 4px solid var(--secondary);
+            padding-left: 20px;
+            margin-left: 0;
+            margin: 20px 0;
+            font-style: italic;
+            color: #555;
+        }
+
+        footer {
+            border-top: 2px solid var(--border);
+            margin-top: 50px;
+            padding-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.95em;
+        }
+
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-bottom 0.2s;
+        }
+
+        a:hover {
+            border-bottom-color: var(--secondary);
+        }
+
+        .reading-time {
+            color: #95a5a6;
+            font-size: 0.95em;
+        }
+
+        .metric-box {
+            background-color: var(--light-bg);
+            padding: 12px;
+            border-left: 3px solid var(--secondary);
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8em; }
+            h2 { font-size: 1.5em; }
+            .container { padding: 20px 15px; }
+            table { font-size: 0.9em; }
+            th, td { padding: 8px; }
+        }
+
+
+        .lede {
+            color: var(--cairn-gray);
+            font-size: 1.08em;
+            margin-top: 18px;
+            text-align: left;
+        }
+
+        .summary {
+            padding: 15px 20px;
+            border-left: 4px solid var(--secondary);
+            border-radius: 4px;
+            margin: 20px 0;
+            background-color: #eef4fa;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .metric {
+            background-color: var(--light-bg);
+            padding: 14px;
+            border-left: 4px solid var(--secondary);
+            border-radius: 4px;
+        }
+
+        .metric b {
+            display: block;
+            font-size: 1.35em;
+            color: var(--primary);
+        }
+
+        @media (max-width: 600px) {
+            .metric-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Two Hybrid Architectures for Long-Context Whale Audio</h1>
+      <p class="lede">Project DoLittle uses a shared causal audio decoder with two ways to connect local acoustic structure to long-range context: Hybrid Sliding-Window Attention + Mixture of Experts (SWA+MoE), and a DeepSeek-style Hybrid Native Sparse Attention + MoE (NSA+MoE).</p>
+      <span class="tag">#NeuralAudio</span><span class="tag">#Bioacoustics</span><span class="tag">#TransformerArchitecture</span><span class="tag">#OpenScience</span>
+    </header>
+
+    <main>
+      <section class="summary">
+        <strong>The design question:</strong> how can a causal model work over long sequences of DAC audio tokens without making every layer attend densely over the entire history? Both architectures retain local attention in most layers and reserve periodic layers for global context. They differ in how those global layers see the past.
+      </section>
+
+      <section>
+        <h2>What both architectures share</h2>
+        <p>Every released model is an autoregressive decoder over interleaved, nine-codebook DAC tokens. Input tokens pass through a learned embedding, rotary positional embeddings (RoPE), repeated pre-norm transformer blocks, a final RMSNorm, and a language-model head tied to the input embedding weights.</p>
+        <p>Every transformer block also uses a Mixture of Experts (MoE) feed-forward path. A router scores experts for each token, sends the token to a small selected subset, and combines their outputs. This adds conditional feed-forward capacity without evaluating every expert for every token.</p>
+      </section>
+
+      <section>
+        <h2>Hybrid SWA + MoE: periodic full-context refresh</h2>
+        <p>The Hybrid SWA architecture keeps most attention layers local. In those layers, a token attends within a recent sliding window; every fifth layer uses ordinary full causal attention across the available context. The full-attention layers act as periodic refresh points, allowing information to move beyond the local window.</p>
+        <ul>
+          <li><strong>Local attention:</strong> 1,024 tokens in the released 10K Large and 32K Medium models.</li>
+          <li><strong>Global schedule:</strong> every fifth layer—layers 5, 10, and 15 in the 16-layer 10K model; layers 5 and 10 in the 12-layer 32K model.</li>
+          <li><strong>MoE:</strong> eight SwiGLU experts per layer with top-2 routing.</li>
+        </ul>
+        <figure class="blog-figure">
+          <img src="assets/generated/audio_medium_swa_moe_sanctsound_humpback_dac_9cb_32k.svg" alt="Architecture diagram for the 32K Medium Hybrid SWA MoE model. It shows a 12-layer causal decoder, local 1,024-token sliding-window attention in most layers, full attention at layers 5 and 10, and top-2 routing across eight experts.">
+          <figcaption>The released 32K Medium Hybrid SWA+MoE model. Its attention schedule alternates local refinement with periodic full-context refresh; the MoE path is present in every layer.</figcaption>
+        </figure>
+        <p>This is the simpler of the two long-context strategies. It trades a small number of expensive global layers for many inexpensive local layers, while preserving a direct full-history path at regular intervals.</p>
+      </section>
+
+      <section>
+        <h2>DeepSeek-style Hybrid NSA + MoE: compressed global context</h2>
+        <p>The 128K model retains local sliding-window attention in most layers but changes its periodic global layers. Rather than forming dense attention over every key and value position, a compressed-global layer keeps full-resolution queries and samples its K/V history at a fixed stride. This is a DeepSeek-inspired sparse-attention design tailored to the nine-codebook token layout.</p>
+        <ul>
+          <li><strong>Local attention:</strong> a 2,048-token sliding window.</li>
+          <li><strong>Global schedule:</strong> compressed-global layers 5 and 10, with K/V sampled every 72 tokens.</li>
+          <li><strong>128K context:</strong> about 1,820 K/V anchors rather than dense K/V attention over 131,072 positions.</li>
+          <li><strong>MoE:</strong> 16 SwiGLU experts, learned-bias top-1 routing, and weighted merge of selected outputs.</li>
+        </ul>
+        <figure class="blog-figure">
+          <img src="assets/generated/audio_medium_nsa_moe_sanctsound_humpback_dac_9cb_128k.svg" alt="Architecture diagram for the 128K Medium Hybrid SWA NSA MoE model. It shows 12 layers, 2,048-token local windows, compressed-global attention at layers 5 and 10, full-resolution queries, stride-72 compressed K/V anchors, and top-1 routing across 16 experts.">
+          <figcaption>The released 128K Hybrid SWA/NSA+MoE model. Its compact global-attention block shows full-resolution queries entering causal attention over stride-72 K/V anchors.</figcaption>
+        </figure>
+        <div class="callout"><strong>Why compression matters:</strong> the global layers preserve a path to the complete history without materializing dense 128K-by-128K attention. Query chunking bounds peak memory, while split Q/K/V projections and gradient checkpointing further reduce training-memory pressure.</div>
+      </section>
+
+      <section>
+        <h2>How the two architectures compare</h2>
+        <table>
+          <thead><tr><th>Design choice</th><th>Hybrid SWA + MoE</th><th>DeepSeek-style Hybrid NSA + MoE</th></tr></thead>
+          <tbody>
+            <tr><td>Released contexts</td><td>10K Large and 32K Medium</td><td>128K Medium</td></tr>
+            <tr><td>Ordinary layers</td><td>1,024-token sliding-window attention</td><td>2,048-token sliding-window attention</td></tr>
+            <tr><td>Periodic global layers</td><td>Dense full causal attention</td><td>Full-resolution Q over stride-72 compressed K/V</td></tr>
+            <tr><td>MoE routing</td><td>8 experts, top-2</td><td>16 experts, learned-bias top-1</td></tr>
+            <tr><td>Primary tradeoff</td><td>Simpler periodic global refresh</td><td>Much longer global context under a bounded attention-memory budget</td></tr>
+          </tbody>
+        </table>
+        <p>Neither architecture is a decoder for whale meaning. They are tools for modeling structure in long sequences of audio tokens. The release is intended to make those design choices inspectable and reproducible, so that researchers can compare them, test alternatives, and evaluate their consequences on new data.</p>
+      </section>
+
+      <section>
+        <h2>What inspection reveals in the 10K Hybrid SWA model</h2>
+        <p>Architecture describes the available pathways; checkpoint inspection helps test how a particular trained model uses them. The released 10K Large checkpoint provides a concrete case study. Its parameter distribution is dominated by the MoE feed-forward paths, while the forward measurement below shows that the periodic global-attention layers can make much larger residual-stream updates than typical local layers.</p>
+        <div class="metric-grid">
+          <div class="metric"><b>84.0%</b>of 10K parameters are in expert matrices</div>
+          <div class="metric"><b>14.0%</b>are in attention projections</div>
+          <div class="metric"><b>2.0%</b>are in token embeddings</div>
+        </div>
+        <figure class="blog-figure">
+          <img src="assets/weight_maximum_detail_10k.png" alt="Maximum-detail weight analysis of the 10K Hybrid SWA MoE model. It groups attention projections, router, normalization, and expert blocks by layer and component type.">
+          <figcaption>Weight geometry of the released 10K Hybrid SWA+MoE checkpoint. The MoE expert matrices account for most parameters; colors compare matching parameter blocks across layers.</figcaption>
+        </figure>
+        <p>On one real 4.01-second prompt, the three full-attention refresh layers updated the residual stream by 1.00×, 0.89×, and 0.98× their incoming residual RMS. Typical middle SWA layers measured 0.03×–0.15×; the final local layer measured 0.92×. That is evidence about this checkpoint and prompt, not a general measure of whale-song understanding or an activation claim about the 128K NSA model.</p>
+        <figure class="blog-figure">
+          <img src="assets/forward_maximum_detail_10k.png" alt="Forward activation analysis of the 10K Hybrid SWA MoE model on a 4.01-second humpback-audio token prompt, including per-head and per-expert measurements.">
+          <figcaption>Forward-pass inspection for the same 10K checkpoint and prompt. The analysis records residual updates, routing statistics, per-head values, per-expert outputs, and final-output statistics.</figcaption>
+        </figure>
+        <div class="callout"><strong>Reproducibility:</strong> the release includes the weight-analysis explorer, a sanitized report, and a recipe using <code>sanctsound_hi01_01_015542.npy</code> (first 3,105 interleaved tokens). For the full evidence and limits, see <a href="model_release_details.html">Inside the Humpback DAC9 Models</a>.</div>
+      </section>
+
+      <section>
+        <h2>Explore and reproduce</h2>
+        <p>The public release includes model checkpoints, the training configurations that generate these diagrams, and code for prompted generation, checkpoint inspection, and weight analysis.</p>
+        <ul>
+          <li><a href="https://huggingface.co/cairninstitute/mmc-humpback-dac9-models">Models on Hugging Face</a></li>
+          <li><a href="https://github.com/cairninstitute/cairn_marine_mammals_communication">Code and configurations on GitHub</a></li>
+          <li><a href="marine_mammals_training_blog_post.html">Training and release details</a></li>
+        </ul>
+      </section>
+    </main>
+    <footer>© 2026 CAIRN Institute (Cascades AI Research Institute) · Advancing AI for the Public Good</footer>
+  </div>
+</body>
+</html>
